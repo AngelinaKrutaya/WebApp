@@ -1,0 +1,37 @@
+version: "3.8"
+services:
+  db_auth:
+    restart: always
+    container_name: db_auth
+    image: postgres:latest
+    environment:
+      - POSTGRES_HOST=db_auth
+      - POSTGRES_DATABASE=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=An26Ge97liNa
+    ports:
+      - "5432:5432"
+    volumes: 
+      - /var/lib/postgresql/data
+    networks:
+      - app-network
+  drogon_api:
+    image: drogonframework/drogon
+    build: D1/my_project
+    command: ./my_project
+    restart: unless-stopped
+    container_name: "DROGON_API"
+    depends_on:
+      - db_auth
+    tty: true
+    links:
+      - db_auth
+    volumes:
+      - ./src:/drogon_api
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge
